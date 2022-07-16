@@ -1,0 +1,38 @@
+SELECT *
+FROM transaction
+LIMIT 10;
+
+-- Some fraudsters hack a credit card by making several small transactions (generally less than $2.00),
+--which are typically ignored by cardholders.
+-- How can you isolate (or group) the transactions of each cardholder?
+
+SELECT card_holder.id, card_holder.name, credit_card.card, transaction.amount, transaction.date
+FROM transaction
+JOIN credit_card ON credit_card.card = transaction.card
+JOIN card_holder ON card_holder.id = credit_card.cardholder_id
+ORDER BY card_holder.name;
+
+
+--Count the transactions that are less than $2.00 per cardholder.
+SELECT COUNT(transaction.amount)
+FROM transaction
+WHERE transaction.amount < 2;
+
+SELECT transaction.card, COUNT(transaction.amount)
+FROM transaction
+WHERE transaction.amount < 2
+GROUP BY transaction.card
+ORDER BY COUNT(transaction.amount) DESC;
+
+
+
+ --Is there any evidence to suggest that a credit card has been hacked? Explain your rationale.
+SELECT *
+FROM transaction AS t
+WHERE date_part('hour', t.date) >= 7
+AND date_part('hour', t.date) <=9
+ORDER BY t.id_merchant DESC
+LIMIT 100;
+ 
+ 
+ 
